@@ -29,8 +29,7 @@ function createHook(depDir, projectDir, hooksDir, hookName, cmd) {
   if (fs.existsSync(path.join(projectDir, 'package.json'))) {
     packageDir = projectDir
   } else {
-    // assumes this is in node_modules/yorkie/
-    packageDir = path.join(depDir, '..', '..')
+    packageDir = findParent(depDir, 'package.json')
   }
 
   // In order to support projects with package.json in a different directory

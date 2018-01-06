@@ -40,6 +40,7 @@ describe('husky', () => {
   it('should support basic layout', () => {
     mkdir(dir, '.git/hooks')
     mkdir(dir, 'node_modules/husky')
+    writeFile(dir, 'package.json', '{}')
 
     install(dir, '/node_modules/husky')
     const hook = readFile(dir, '.git/hooks/pre-commit')
@@ -59,6 +60,7 @@ describe('husky', () => {
   it('should support project installed in sub directory', () => {
     mkdir(dir, '.git/hooks')
     mkdir(dir, 'A/B/node_modules/husky')
+    writeFile(dir, 'A/B/package.json', '{}')
 
     install(dir, 'A/B/node_modules/husky')
     const hook = readFile(dir, '.git/hooks/pre-commit')
@@ -72,6 +74,8 @@ describe('husky', () => {
   it('should support git submodule', () => {
     mkdir(dir, '.git/modules/A/B')
     mkdir(dir, 'A/B/node_modules/husky')
+    writeFile(dir, 'package.json', '{}')
+    writeFile(dir, 'A/B/package.json', '{}')
     writeFile(dir, 'A/B/.git', 'git: ../../.git/modules/A/B')
 
     install(dir, 'A/B/node_modules/husky')
@@ -86,6 +90,8 @@ describe('husky', () => {
   it('should support git submodule and sub directory', () => {
     mkdir(dir, '.git/modules/A/B')
     mkdir(dir, 'A/B/C/node_modules/husky')
+    writeFile(dir, 'package.json', '{}')
+    writeFile(dir, 'A/B/C/package.json', '{}')
     writeFile(dir, 'A/B/.git', 'git: ../../.git/modules/A/B')
 
     install(dir, 'A/B/C/node_modules/husky')
@@ -100,6 +106,8 @@ describe('husky', () => {
   it('should support git worktrees', () => {
     mkdir(dir, '.git/worktrees/B')
     mkdir(dir, 'A/B/node_modules/husky')
+    writeFile(dir, 'package.json', '{}')
+    writeFile(dir, 'A/B/package.json', '{}')
 
     // Git path for worktrees is absolute
     const absolutePath = path.join(dir, '.git/worktrees/B')
