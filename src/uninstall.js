@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const hooks = require('./hooks.json')
+const findParent = require('./utils/find-parent')
 const findHooksDir = require('./utils/find-hooks-dir')
 const is = require('./utils/is')
 
@@ -15,7 +16,7 @@ function removeHook(dir, name) {
 
 function uninstallFrom(huskyDir) {
   try {
-    const hooksDir = findHooksDir(huskyDir)
+    const hooksDir = findHooksDir(findParent(huskyDir, '.git'))
 
     hooks.forEach(function(hookName) {
       removeHook(hooksDir, hookName)

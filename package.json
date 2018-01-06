@@ -1,15 +1,15 @@
 {
-  "name": "husky",
-  "version": "0.14.3",
-  "description": "Prevents bad commit or push (git hooks, pre-commit/precommit, pre-push/prepush, post-merge/postmerge and all that stuff...)",
+  "name": "yorkie",
+  "version": "1.0.0",
+  "description": "githooks management forked from husky",
   "engines": {
     "node": ">=4"
   },
   "scripts": {
     "test": "jest",
     "format": "prettier --single-quote --no-semi --write **/*.js",
-    "install": "node ./bin/install.js",
-    "uninstall": "node ./bin/uninstall.js"
+    "install": "node bin/install.js",
+    "uninstall": "node bin/uninstall.js"
   },
   "repository": {
     "type": "git",
@@ -29,12 +29,15 @@
     "postmerge",
     "test"
   ],
-  "author": "Typicode <typicode@gmail.com>",
+  "authors": [
+    "Typicode <typicode@gmail.com>",
+    "Evan You"
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/typicode/husky/issues"
+    "url": "https://github.com/yyx990803/yorkie/issues"
   },
-  "homepage": "https://github.com/typicode/husky",
+  "homepage": "https://github.com/yyx990803/yorkie",
   "devDependencies": {
     "jest": "^20.0.4",
     "mkdirp": "^0.5.1",

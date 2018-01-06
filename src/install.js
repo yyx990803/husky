@@ -19,15 +19,19 @@ function write(filename, data) {
   fs.chmodSync(filename, parseInt('0755', 8))
 }
 
-function createHook(huskyDir, hooksDir, hookName, cmd) {
+function createHook(depDir, projectDir, hooksDir, hookName, cmd) {
   const filename = path.join(hooksDir, hookName)
 
-  // Assuming that this file is in node_modules/husky
-  const packageDir = path.join(huskyDir, '..', '..')
-
-  // Get project directory
-  // When used in submodule, the project dir is the first .git that is found
-  const projectDir = findParent(huskyDir, '.git')
+  let packageDir
+  // prioritize package.json next to .git
+  // this avoids double-install in lerna monorepos where both root and sub
+  // package depends on this module
+  if (fs.existsSync(path.join(projectDir, 'package.json'))) {
+    packageDir = projectDir
+  } else {
+    // assumes this is in node_modules/yorkie/
+    packageDir = path.join(depDir, '..', '..')
+  }
 
   // In order to support projects with package.json in a different directory
   // than .git, find relative path from project directory to package.json
@@ -61,9 +65,9 @@ function createHook(huskyDir, hooksDir, hookName, cmd) {
   return SKIP
 }
 
-function installFrom(huskyDir) {
+function installFrom(depDir) {
   try {
-    const isInSubNodeModule = (huskyDir.match(/node_modules/g) || []).length > 1
+    const isInSubNodeModule = (depDir.match(/node_modules/g) || []).length > 1
     if (isInSubNodeModule) {
       return console.log(
         "trying to install from sub 'node_module' directory,",
@@ -71,7 +75,8 @@ function installFrom(huskyDir) {
       )
     }
 
-    const hooksDir = findHooksDir(huskyDir)
+    const projectDir = findParent(depDir, '.git')
+    const hooksDir = findHooksDir(projectDir)
 
     if (hooksDir) {
       hooks
@@ -79,7 +84,7 @@ function installFrom(huskyDir) {
           const npmScriptName = hookName.replace(/-/g, '')
           return {
             hookName: hookName,
-            action: createHook(huskyDir, hooksDir, hookName, npmScriptName)
+            action: createHook(depDir, projectDir, hooksDir, hookName, npmScriptName)
           }
         })
         .forEach(function(item) {
