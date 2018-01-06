@@ -6,9 +6,9 @@ function readFile(filename) {
   return fs.readFileSync(filename, 'utf-8')
 }
 
-function husky(filename) {
+function huskyOrYorkie(filename) {
   const data = readFile(filename)
-  return data.indexOf('#husky') !== -1
+  return data.indexOf('#husky') !== -1 || data.indexOf('#yorkie') !== -1
 }
 
 function ghooks(filename) {
@@ -22,7 +22,7 @@ function preCommit(filename) {
 }
 
 module.exports = {
-  husky,
+  huskyOrYorkie,
   ghooks,
   preCommit
 }

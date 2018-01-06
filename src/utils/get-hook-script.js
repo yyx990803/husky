@@ -10,7 +10,7 @@ function platformSpecific() {
     // Add
     // Node standard installation path /c/Program Files/nodejs
     // for GUI apps
-    // https://github.com/typicode/husky/issues/49
+    // https://github.com/typicode/yorkie/issues/49
     return stripIndent(
       `
       # Node standard installation
@@ -18,7 +18,7 @@ function platformSpecific() {
     )
   } else {
     // Using normalize to support ' in path
-    // https://github.com/typicode/husky/issues/117
+    // https://github.com/typicode/yorkie/issues/117
     const home = normalize(process.env.HOME)
 
     return stripIndent(
@@ -37,7 +37,7 @@ function platformSpecific() {
   }
 }
 
-module.exports = function getHookScript(hookName, relativePath, npmScriptName) {
+module.exports = function getHookScript(hookName, relativePath, runnerPath) {
   // On Windows normalize path (i.e. convert \ to /)
   const normalizedPath = normalize(relativePath)
 
@@ -50,7 +50,7 @@ module.exports = function getHookScript(hookName, relativePath, npmScriptName) {
     stripIndent(
       `
       #!/bin/sh
-      #husky ${pkg.version}
+      #yorkie ${pkg.version}
 
       command_exists () {
         command -v "$1" >/dev/null 2>&1
@@ -77,30 +77,21 @@ module.exports = function getHookScript(hookName, relativePath, npmScriptName) {
 
       cd "${normalizedPath}"
 
-      # Check if ${npmScriptName} script is defined, skip if not
-      has_hook_script ${npmScriptName} || exit 0`
+      # Check if ${hookName} is defined, skip if not
+      has_hook_script ${hookName} || exit 0`
     ).trim(),
 
     platformSpecific(),
 
     stripIndent(
       `
-      # Check that npm exists
-      command_exists npm || {
-        echo >&2 "husky > can't find npm in PATH, skipping ${npmScriptName} script in package.json"
-        exit 0
-      }
-
       # Export Git hook params
       export GIT_PARAMS="$*"
 
-      # Run npm script
-      echo "husky > npm run -s ${npmScriptName} (node \`node -v\`)"
-      echo
-
-      npm run -s ${npmScriptName} || {
+      # Run hook
+      node ${runnerPath} ${hookName} || {
         echo
-        echo "husky > ${hookName} hook failed ${noVerifyMessage}"
+        echo "${hookName} hook failed ${noVerifyMessage}"
         exit 1
       }
       `

@@ -32,80 +32,80 @@ function exists(dir, filePath) {
   return fs.existsSync(path.join(dir, filePath))
 }
 
-describe('husky', () => {
+describe('yorkie', () => {
   let dir
   beforeEach(() => (dir = tempy.directory()))
   afterEach(() => rimraf.sync(dir))
 
   it('should support basic layout', () => {
     mkdir(dir, '.git/hooks')
-    mkdir(dir, 'node_modules/husky')
+    mkdir(dir, 'node_modules/yorkie')
     writeFile(dir, 'package.json', '{}')
 
-    install(dir, '/node_modules/husky')
+    install(dir, '/node_modules/yorkie')
     const hook = readFile(dir, '.git/hooks/pre-commit')
 
-    expect(hook).toMatch('#husky')
+    expect(hook).toMatch('#yorkie')
     expect(hook).toMatch('cd "."')
-    expect(hook).toMatch('npm run -s precommit')
+    expect(hook).toMatch(`node ${require.resolve('../src/runner')} pre-commit`)
     expect(hook).toMatch('--no-verify')
 
     const prepareCommitMsg = readFile(dir, '.git/hooks/prepare-commit-msg')
     expect(prepareCommitMsg).toMatch('cannot be bypassed')
 
-    uninstall(dir, 'node_modules/husky')
+    uninstall(dir, 'node_modules/yorkie')
     expect(exists(dir, '.git/hooks/pre-push')).toBeFalsy()
   })
 
   it('should support project installed in sub directory', () => {
     mkdir(dir, '.git/hooks')
-    mkdir(dir, 'A/B/node_modules/husky')
+    mkdir(dir, 'A/B/node_modules/yorkie')
     writeFile(dir, 'A/B/package.json', '{}')
 
-    install(dir, 'A/B/node_modules/husky')
+    install(dir, 'A/B/node_modules/yorkie')
     const hook = readFile(dir, '.git/hooks/pre-commit')
 
     expect(hook).toMatch('cd "A/B"')
 
-    uninstall(dir, 'A/B/node_modules/husky')
+    uninstall(dir, 'A/B/node_modules/yorkie')
     expect(exists(dir, '.git/hooks/pre-push')).toBeFalsy()
   })
 
   it('should support git submodule', () => {
     mkdir(dir, '.git/modules/A/B')
-    mkdir(dir, 'A/B/node_modules/husky')
+    mkdir(dir, 'A/B/node_modules/yorkie')
     writeFile(dir, 'package.json', '{}')
     writeFile(dir, 'A/B/package.json', '{}')
     writeFile(dir, 'A/B/.git', 'git: ../../.git/modules/A/B')
 
-    install(dir, 'A/B/node_modules/husky')
+    install(dir, 'A/B/node_modules/yorkie')
     const hook = readFile(dir, '.git/modules/A/B/hooks/pre-commit')
 
     expect(hook).toMatch('cd "."')
 
-    uninstall(dir, 'A/B/node_modules/husky')
+    uninstall(dir, 'A/B/node_modules/yorkie')
     expect(exists(dir, '.git/hooks/pre-push')).toBeFalsy()
   })
 
   it('should support git submodule and sub directory', () => {
     mkdir(dir, '.git/modules/A/B')
-    mkdir(dir, 'A/B/C/node_modules/husky')
+    mkdir(dir, 'A/B/C/node_modules/yorkie')
     writeFile(dir, 'package.json', '{}')
     writeFile(dir, 'A/B/C/package.json', '{}')
     writeFile(dir, 'A/B/.git', 'git: ../../.git/modules/A/B')
 
-    install(dir, 'A/B/C/node_modules/husky')
+    install(dir, 'A/B/C/node_modules/yorkie')
     const hook = readFile(dir, '.git/modules/A/B/hooks/pre-commit')
 
     expect(hook).toMatch('cd "C"')
 
-    uninstall(dir, 'A/B/app/node_modules/husky')
+    uninstall(dir, 'A/B/app/node_modules/yorkie')
     expect(exists(dir, '.git/hooks/pre-push')).toBeFalsy()
   })
 
   it('should support git worktrees', () => {
     mkdir(dir, '.git/worktrees/B')
-    mkdir(dir, 'A/B/node_modules/husky')
+    mkdir(dir, 'A/B/node_modules/yorkie')
     writeFile(dir, 'package.json', '{}')
     writeFile(dir, 'A/B/package.json', '{}')
 
@@ -113,67 +113,67 @@ describe('husky', () => {
     const absolutePath = path.join(dir, '.git/worktrees/B')
     writeFile(dir, 'A/B/.git', `git: ${absolutePath}`)
 
-    install(dir, 'A/B/node_modules/husky')
+    install(dir, 'A/B/node_modules/yorkie')
     const hook = readFile(dir, '.git/worktrees/B/hooks/pre-commit')
 
     expect(hook).toMatch('cd "."')
 
-    uninstall(dir, 'A/B/node_modules/husky')
+    uninstall(dir, 'A/B/node_modules/yorkie')
     expect(exists(dir, '.git/hooks/pre-commit')).toBeFalsy()
   })
 
   it('should not modify user hooks', () => {
     mkdir(dir, '.git/hooks')
-    mkdir(dir, 'node_modules/husky')
+    mkdir(dir, 'node_modules/yorkie')
     writeFile(dir, '.git/hooks/pre-push', 'foo')
 
     // Verify that it's not overwritten
-    install(dir, 'node_modules/husky')
+    install(dir, 'node_modules/yorkie')
     const hook = readFile(dir, '.git/hooks/pre-push')
     expect(hook).toBe('foo')
 
-    uninstall(dir, 'node_modules/husky')
+    uninstall(dir, 'node_modules/yorkie')
     expect(exists(dir, '.git/hooks/pre-push')).toBeTruthy()
   })
 
   it('should not install from /node_modules/A/node_modules', () => {
     mkdir(dir, '.git/hooks')
-    mkdir(dir, 'node_modules/A/node_modules/husky')
+    mkdir(dir, 'node_modules/A/node_modules/yorkie')
 
-    install(dir, 'node_modules/A/node_modules/husky')
+    install(dir, 'node_modules/A/node_modules/yorkie')
     expect(exists(dir, '.git/hooks/pre-push')).toBeFalsy()
   })
 
   it("should not crash if there's no .git directory", () => {
-    mkdir(dir, 'node_modules/husky')
+    mkdir(dir, 'node_modules/yorkie')
 
-    expect(() => install(dir, 'node_modules/husky')).not.toThrow()
-    expect(() => uninstall(dir, 'node_modules/husky')).not.toThrow()
+    expect(() => install(dir, 'node_modules/yorkie')).not.toThrow()
+    expect(() => uninstall(dir, 'node_modules/yorkie')).not.toThrow()
   })
 
   it('should migrate existing scripts (ghooks)', () => {
     mkdir(dir, '.git/hooks')
-    mkdir(dir, '/node_modules/husky')
+    mkdir(dir, '/node_modules/yorkie')
     writeFile(
       dir,
       '.git/hooks/pre-commit',
       '// Generated by ghooks. Do not edit this file.'
     )
 
-    install(dir, 'node_modules/husky')
+    install(dir, 'node_modules/yorkie')
     const hook = readFile(dir, '.git/hooks/pre-commit')
-    expect(hook).toMatch('husky')
+    expect(hook).toMatch('yorkie')
     expect(hook).not.toMatch('ghooks')
   })
 
   it('should migrate existing scripts (pre-commit)', () => {
     mkdir(dir, '.git/hooks')
-    mkdir(dir, '/node_modules/husky')
+    mkdir(dir, '/node_modules/yorkie')
     writeFile(dir, '.git/hooks/pre-commit', './node_modules/pre-commit/hook')
 
-    install(dir, 'node_modules/husky')
+    install(dir, 'node_modules/yorkie')
     const hook = readFile(dir, '.git/hooks/pre-commit')
-    expect(hook).toMatch('husky')
+    expect(hook).toMatch('yorkie')
     expect(hook).not.toMatch('./node_modules/pre-commit/hook')
   })
 })

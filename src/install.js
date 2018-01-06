@@ -19,7 +19,7 @@ function write(filename, data) {
   fs.chmodSync(filename, parseInt('0755', 8))
 }
 
-function createHook(depDir, projectDir, hooksDir, hookName, cmd) {
+function createHook(depDir, projectDir, hooksDir, hookName, runnerPath) {
   const filename = path.join(hooksDir, hookName)
 
   let packageDir
@@ -36,7 +36,7 @@ function createHook(depDir, projectDir, hooksDir, hookName, cmd) {
   // than .git, find relative path from project directory to package.json
   const relativePath = path.join('.', path.relative(projectDir, packageDir))
 
-  const hookScript = getHookScript(hookName, relativePath, cmd)
+  const hookScript = getHookScript(hookName, relativePath, runnerPath)
 
   // Create hooks directory if needed
   if (!fs.existsSync(hooksDir)) fs.mkdirSync(hooksDir)
@@ -56,7 +56,7 @@ function createHook(depDir, projectDir, hooksDir, hookName, cmd) {
     return MIGRATE_PRE_COMMIT
   }
 
-  if (is.husky(filename)) {
+  if (is.huskyOrYorkie(filename)) {
     write(filename, hookScript)
     return UPDATE
   }
@@ -76,14 +76,14 @@ function installFrom(depDir) {
 
     const projectDir = findParent(depDir, '.git')
     const hooksDir = findHooksDir(projectDir)
+    const runnerPath = require.resolve('./runner.js')
 
     if (hooksDir) {
       hooks
         .map(function(hookName) {
-          const npmScriptName = hookName.replace(/-/g, '')
           return {
             hookName: hookName,
-            action: createHook(depDir, projectDir, hooksDir, hookName, npmScriptName)
+            action: createHook(depDir, projectDir, hooksDir, hookName, runnerPath)
           }
         })
         .forEach(function(item) {

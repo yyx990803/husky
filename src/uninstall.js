@@ -9,7 +9,7 @@ const is = require('./utils/is')
 function removeHook(dir, name) {
   const filename = `${dir}/${name}`
 
-  if (fs.existsSync(filename) && is.husky(filename)) {
+  if (fs.existsSync(filename) && is.huskyOrYorkie(filename)) {
     fs.unlinkSync(`${dir}/${name}`)
   }
 }
