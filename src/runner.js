@@ -16,4 +16,8 @@ if (!command) {
 }
 
 console.log(` > running ${hook} hook: ${command}`)
-execa.shellSync(command, { stdio: 'inherit' })
+try {
+  execa.shellSync(command, { stdio: 'inherit' })
+} catch (e) {
+  process.exit(1)
+}
