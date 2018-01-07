@@ -89,7 +89,7 @@ module.exports = function getHookScript(hookName, relativePath, runnerPath) {
       export GIT_PARAMS="$*"
 
       # Run hook
-      node ${runnerPath} ${hookName} || {
+      node "${runnerPath}" ${hookName} || {
         echo
         echo "${hookName} hook failed ${noVerifyMessage}"
         exit 1
