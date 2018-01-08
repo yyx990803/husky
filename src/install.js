@@ -76,7 +76,7 @@ function installFrom(depDir) {
 
     const projectDir = findParent(depDir, '.git')
     const hooksDir = findHooksDir(projectDir)
-    const runnerPath = require.resolve('./runner.js')
+    const runnerPath = './node_modules/yorkie/src/runner.js'
 
     if (hooksDir) {
       hooks

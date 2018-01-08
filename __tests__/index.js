@@ -47,7 +47,7 @@ describe('yorkie', () => {
 
     expect(hook).toMatch('#yorkie')
     expect(hook).toMatch('cd "."')
-    expect(hook).toMatch(`node ${require.resolve('../src/runner')} pre-commit`)
+    expect(hook).toMatch(`node "./node_modules/yorkie/src/runner.js" pre-commit`)
     expect(hook).toMatch('--no-verify')
 
     const prepareCommitMsg = readFile(dir, '.git/hooks/prepare-commit-msg')
