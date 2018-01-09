@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/typicode/husky.git"
+    "url": "git://github.com/yyx990803/yorkie.git"
   },
   "keywords": [
     "git",
