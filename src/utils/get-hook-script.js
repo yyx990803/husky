@@ -57,7 +57,7 @@ module.exports = function getHookScript(hookName, relativePath, runnerPath) {
       }
 
       has_hook_script () {
-        [ -f package.json ] && cat package.json | grep -q "\\"$1\\"[[:space:]]*:"
+        [ -f package.json ] && cat package.json | grep -q "\"$1\"[[:space:]]*:"
       }
 
       # OS X and Linux only
