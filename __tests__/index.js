@@ -57,18 +57,13 @@ describe('yorkie', () => {
     expect(exists(dir, '.git/hooks/pre-push')).toBeFalsy()
   })
 
-  it('should support project installed in sub directory', () => {
+  it('should not install git hooks when installed in sub directory', () => {
     mkdir(dir, '.git/hooks')
     mkdir(dir, 'A/B/node_modules/yorkie')
     writeFile(dir, 'A/B/package.json', '{}')
 
     install(dir, 'A/B/node_modules/yorkie')
-    const hook = readFile(dir, '.git/hooks/pre-commit')
-
-    expect(hook).toMatch('cd "A/B"')
-
-    uninstall(dir, 'A/B/node_modules/yorkie')
-    expect(exists(dir, '.git/hooks/pre-push')).toBeFalsy()
+    expect(exists(dir, '.git/hooks/pre-commit')).toBeFalsy()
   })
 
   it('should support git submodule', () => {
@@ -87,7 +82,7 @@ describe('yorkie', () => {
     expect(exists(dir, '.git/hooks/pre-push')).toBeFalsy()
   })
 
-  it('should support git submodule and sub directory', () => {
+  it('should not install git hooks in submodule sub directory', () => {
     mkdir(dir, '.git/modules/A/B')
     mkdir(dir, 'A/B/C/node_modules/yorkie')
     writeFile(dir, 'package.json', '{}')
@@ -95,12 +90,7 @@ describe('yorkie', () => {
     writeFile(dir, 'A/B/.git', 'git: ../../.git/modules/A/B')
 
     install(dir, 'A/B/C/node_modules/yorkie')
-    const hook = readFile(dir, '.git/modules/A/B/hooks/pre-commit')
-
-    expect(hook).toMatch('cd "C"')
-
-    uninstall(dir, 'A/B/app/node_modules/yorkie')
-    expect(exists(dir, '.git/hooks/pre-push')).toBeFalsy()
+    expect(exists(dir, '.git/modules/A/B/hooks/pre-commit')).toBeFalsy()
   })
 
   it('should support git worktrees', () => {
@@ -153,6 +143,7 @@ describe('yorkie', () => {
 
   it('should migrate existing scripts (ghooks)', () => {
     mkdir(dir, '.git/hooks')
+    writeFile(dir, 'package.json', '{}')
     mkdir(dir, '/node_modules/yorkie')
     writeFile(
       dir,
@@ -168,6 +159,7 @@ describe('yorkie', () => {
 
   it('should migrate existing scripts (pre-commit)', () => {
     mkdir(dir, '.git/hooks')
+    writeFile(dir, 'package.json', '{}')
     mkdir(dir, '/node_modules/yorkie')
     writeFile(dir, '.git/hooks/pre-commit', './node_modules/pre-commit/hook')
 
