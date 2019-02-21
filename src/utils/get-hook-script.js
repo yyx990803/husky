@@ -65,6 +65,8 @@ module.exports = function getHookScript(hookName, relativePath, runnerPath) {
         # If nvm is not loaded, load it
         command_exists nvm || {
           export NVM_DIR="$1"
+          # Brew nvm script installation path /usr/local/opt/nvm
+          [ -d "/usr/local/opt/nvm" ] && set -- "/usr/local/opt/nvm"
           [ -s "$1/nvm.sh" ] && . "$1/nvm.sh"
         }
       }
