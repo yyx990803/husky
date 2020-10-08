@@ -5,6 +5,10 @@ const path = require('path')
 const findParent = require('./find-parent')
 
 function findHooksDir(dir) {
+  // ENV GIT_DIR expects the location of .git
+  if (process.env.GIT_DIR) {
+    return path.resolve(dir, process.env.GIT_DIR)
+  }
   if (dir) {
     let gitDir = path.join(dir, '.git')
     if (!fs.existsSync(gitDir)) {
