@@ -28,8 +28,13 @@ function platformSpecific() {
         # Node standard installation path /usr/local
         export PATH="$PATH:/usr/local/bin:/usr/local"
 
-        # Try to load nvm using path of standard installation
-        load_nvm ${home}/.nvm
+        # Try to load nvm using path of standard installation ${home}/.nvm and
+        # Brew standard installation /usr/local/opt/nvm
+        if [[ -d "${home}/.nvm" ]]; then
+          load_nvm "${home}/.nvm"
+        elif [[ -d "/usr/local/opt/nvm" ]]; then
+          load_nvm "/usr/local/opt/nvm"
+        else
         run_nvm`
     )
 
